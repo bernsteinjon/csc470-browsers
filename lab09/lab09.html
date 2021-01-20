@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <script type="text/javascript" src="hurricaneData.js"></script>
+        <script type="text/javascript">
+/*
+Jon Bernstein
+4/25/2019
+Lab 09
+
+Purpose:
+Practice using Array methods including map(...) and reduce(...)
+*/
+
+(function () {
+    var convert = 1609.344;
+    var hurricane = Object.keys(hurricaneData);
+
+    /*
+    functions given in project description
+    */
+
+    Number.prototype.toRadians = function() {
+        return this * Math.PI / 180;
+    };
+    Number.prototype.toDegrees = function() {
+        return this * 180 / Math.PI;
+    };
+    function distance(lat1, lon1, lat2, lon2) {
+         var φ1 = lat1.toRadians();
+         var φ2 = lat2.toRadians();
+         var Δλ = (lon2-lon1).toRadians();
+         var R = 6371e3;
+
+         return Math.acos( Math.sin(φ1)*Math.sin(φ2) + Math.cos(φ1)*Math.cos(φ2) * Math.cos(Δλ) ) * R;
+    }
+    var solution = hurricane.map(function callback(val) {
+        var coords = hurricaneData[val].map(function callback2(val) {
+            return [parseFloat(val.latitude),parseFloat(val.longitude)];
+        });
+        var tracks = coords.map(function tracker(val, idx, arr) {
+            if (idx === 0) {
+                return 0;
+            }
+            return distance(val[0], val[1], arr[idx - 1][0], arr[idx - 1][1]);
+        });
+        var dist = tracks.reduce(function sum(prev, val) {
+            return prev + val;
+        }, 0);
+        dist /= convert;
+        return "name: " + val + ", length: " + dist;
+    });
+    console.log(solution);
+    return solution;
+})();
+        </script>
+    </body>
+</html>

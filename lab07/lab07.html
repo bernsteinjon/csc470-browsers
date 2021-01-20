@@ -1,0 +1,62 @@
+<!doctype html>
+<head>
+    <title>Lab 7</title>
+</head>
+<body>
+<div class="container">
+    <h1>Lab 7</h1>
+    <h2>Jon Bernstein</h2>
+    <canvas id="cvs" width="800" height="800"></canvas>
+</div>
+</body>
+<script type="text/javascript">
+    (function () {
+        let cvs = document.getElementById('cvs'); //gets cvs
+        let ctx = cvs.getContext('2d');
+        let radius = 100; //var initialization for radius
+        let npoints = 5; //var initialization for npoints
+        let lineWidth = 10; //var initilization lineWidth
+        let strokeColor = 'black'; //var initialization for strokeColor
+        let fillColor = 'cyan'; //var initialization for fillColor
+        let last = null; //holds last
+
+        function degreesToRadians(degrees) {
+            return degrees * (Math.PI / 180); //converts degrees to rad
+        }
+
+        function getMousePos(cvs, evt) { //function taken from slides
+            let rect = cvs.getBoundingClientRect();
+            return {
+              x: evt.clientX - rect.left,
+              y: evt.clientY - rect.top
+            };
+        }
+
+        function drawStar(cx, cy, radius, npoints, ctx) {
+            let theta = degreesToRadians(-90); //starting angle
+            let delta = degreesToRadians(360 / (2 * npoints)); //change in angle
+            let r = 0;
+            ctx.beginPath(); //begins drawing
+            for (let i = 0; i < (2 * npoints); i++) {
+                theta += delta; //calculates angle for every point
+                if(i % 2 === 0){
+                    r = .5 * radius; //if i is even, r = 1/2 radius
+                }
+                else{
+                    r = radius; //if i is odd, r = radius
+                }
+                ctx.lineTo(r * Math.cos(theta) + last.x, r * Math.sin(theta) + last.y);
+            }
+            ctx.closePath(); //finishes drawing and formats lines/fill
+            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle = strokeColor;
+            ctx.stroke();
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+        cvs.addEventListener('mousedown', function(evt){ //add event listener for mouse down
+            last = getMousePos(cvs, evt);
+            drawStar(last.x, last.y, radius, npoints, ctx);
+        });
+    })();
+</script>

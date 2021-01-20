@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Hurricane Viewer</title>
+        <style>
+            #div1 {
+              border: 1px solid black;
+              width : 1275px;
+              margin: 0 auto;  /* center content horizontally */
+            }
+            #sel1 {
+                font-family: Arial;
+                font-size  : 24px;
+                position   : absolute;
+
+            }
+        </style>
+        <script type="text/javascript" src="hurricaneData.js"></script>
+    </head>
+    <body>
+        <div id="div1">
+            <select id="sel1">
+                <option value="">(Select Hurricane)</option>
+                <option value="DEAN">Dean</option>
+                <option value="HARVEY">Harvey</option>
+                <option value="IRMA">Irma</option>
+                <option value="KATRINA">Katrina</option>
+                <option value="MARIA">Maria</option>
+                <option value="SANDY">Sandy</option>
+            </select>
+            <svg id="cvs" width="1275" height="825">
+                <image xlink:href="chart_1275x825.png" x=0 y=0 style="border: 1px solid black;"></image>
+            </svg>
+        </div>
+
+        <script type="text/javascript">
+        /*
+        Jon Bernstein
+        CSC470-03
+        Project 3
+        Hurricane Viewer
+        */
+
+        !function(){
+
+          var previous = null; //vars to keep track of previous hurricane
+          var previouslen;
+
+          var hurricanes = hurricaneData; //copy of hurricaneData
+          sel1.onchange = handleChange; //event handler
+
+          /*
+          createSVGElement function provided in previous lab
+          */
+
+          function createSVGElement(tag, attrs, innerHTML){
+            let ns = "http://www.w3.org/2000/svg";
+            let el = document.createElementNS(ns, tag);
+            for(let attr in attrs){
+              el.setAttribute(attr, String(attrs[attr]));
+            }
+            if(innerHTML){
+              el.innerHTML = innerHTML;
+            }
+            return el;
+          }
+
+          function handleChange(){ //function that executes upon a selection being made
+            var selection = document.getElementById('sel1').value; //stores which storm user wants
+            var len = hurricanes[selection].length;
+            if(previous == selection){ //checks that a new storm has been chosen
+              return;
+            }
+            if(previous !== null && (previous !== selection)){ //if a new child is chosen
+              for(let i = 0; i < previouslen; i++){
+                cvs.removeChild(cvs.lastChild); //removes all elements
+              }
+            }
+            var longs = []; //general purpose vars
+            var lats = [];
+            var radius = [];
+            var coords = [];
+            var windspeed = [];
+            var xy;
+            let templat;
+            let templong;
+
+            if(selection == "DEAN"){ //for each selection, gets all the required information
+              for(let i = 0; i < len; i++){
+                longs[i] = hurricaneData["DEAN"][i].longitude;
+                lats[i] = hurricaneData["DEAN"][i].latitude;
+                radius[i] = hurricaneData["DEAN"][i].radii34kt[0];
+                windspeed[i] = hurricaneData["DEAN"][i].windMax;
+              }
+            }
+            else if(selection == "HARVEY"){
+              for(let i = 0; i < len; i++){
+                longs[i] = hurricaneData["HARVEY"][i].longitude;
+                lats[i] = hurricaneData["HARVEY"][i].latitude;
+                radius[i] = hurricaneData["HARVEY"][i].radii34kt[0];
+                windspeed[i] = hurricaneData["HARVEY"][i].windMax;
+              }
+            }
+            else if(selection == "IRMA"){
+              for(let i = 0; i < len; i++){
+                longs[i] = hurricaneData["IRMA"][i].longitude;
+                lats[i] = hurricaneData["IRMA"][i].latitude;
+                radius[i] = hurricaneData["IRMA"][i].radii34kt[0];
+                windspeed[i] = hurricaneData["IRMA"][i].windMax;
+              }
+            }
+            else if(selection == "KATRINA"){
+              for(let i = 0; i < len; i++){
+                longs[i] = hurricaneData["KATRINA"][i].longitude;
+                lats[i] = hurricaneData["KATRINA"][i].latitude;
+                radius[i] = hurricaneData["KATRINA"][i].radii34kt[0];
+                windspeed[i] = hurricaneData["KATRINA"][i].windMax;
+              }
+            }
+            else if(selection == "MARIA"){
+              for(let i = 0; i < len; i++){
+                longs[i] = hurricaneData["MARIA"][i].longitude;
+                lats[i] = hurricaneData["MARIA"][i].latitude;
+                radius[i] = hurricaneData["MARIA"][i].radii34kt[0];
+                windspeed[i] = hurricaneData["MARIA"][i].windMax;
+              }
+            }
+            else if(selection == "SANDY"){
+              for(let i = 0; i < len; i++){
+                longs[i] = hurricaneData["SANDY"][i].longitude;
+                lats[i] = hurricaneData["SANDY"][i].latitude;
+                radius[i] = hurricaneData["SANDY"][i].radii34kt[0];
+                windspeed[i] = hurricaneData["SANDY"][i].windMax;
+              }
+            }
+            for(let i = 0; i < len; i++){ //parseFloat the lat and long to format
+              lats[i] = parseFloat(lats[i]);
+              longs[i] = parseFloat(longs[i]);
+            }
+
+            for(let i = 0; i < len; i++){ //puts translated lat and long into array of coords
+              templat = lats[i];
+              templong = longs[i];
+              xy = ll2xy(templat, templong);
+              coords[i] = xy;
+            }
+
+            for(let i = 0; i < radius.length; i++){ //radius checking, handles negative nums
+              if(radius[i] < 0){
+                radius[i] = 10;
+              }
+              else{
+                radius[i] = radius[i] * .15;
+              }
+            }
+
+            let circle;
+            //create different colored circles for different windspeeds
+            for(i = 0; i < len; i++){
+              if(windspeed[i] < 64){
+                circle = createSVGElement('circle', {cx: coords[i].x, cy: coords[i].y, r: radius[i], fill: "white", stroke: "black", opacity: ".4"});
+                cvs.append(circle);
+              }
+              else if(windspeed[i] > 63 && windspeed[i] < 96){
+                circle = createSVGElement('circle', {cx: coords[i].x, cy: coords[i].y, r: radius[i], fill: "lime", stroke: "black", opacity: ".4"});
+                cvs.append(circle);
+              }
+              else if(windspeed[i] > 95 && windspeed[i] < 113){
+                circle = createSVGElement('circle', {cx: coords[i].x, cy: coords[i].y, r: radius[i], fill: "yellow", stroke: "black", opacity: ".4"});
+                cvs.append(circle);
+              }
+              else if(windspeed[i] > 112 && windspeed[i] < 137){
+                circle = createSVGElement('circle', {cx: coords[i].x, cy: coords[i].y, r: radius[i], fill: "orange", stroke: "black", opacity: ".4"});
+                cvs.append(circle);
+              }
+              else if(windspeed[i] > 137){
+                circle = createSVGElement('circle', {cx: coords[i].x, cy: coords[i].y, r: radius[i], fill: "red", stroke: "black", opacity: ".4"});
+                cvs.append(circle);
+              }
+            previous = selection; //stores previous options
+            previouslen = len;
+          }
+        }
+          // Convert latitude-longitude to pixel coordinates
+          function ll2xy(latitude, longitude) {
+            let minx = 38;      // Minimum chart x-pixel coordinate
+            let maxx = 1237;    // Maximum chart x-pixel coordinate
+            let miny = 42;      // Minimum chart y-pixel coordinate
+            let maxy = 718;     // Maximum chart y-pixel coordinate
+
+            //     // Chart latitude and longitude extents
+            let minlon = 22;    // Minimum chart longitude
+            let maxlon = 99;    // Maximum chart longitude
+            let minlat = 7;     // Minimum chart latitude
+            let maxlat = 45;    // Maximum chart latitude
+
+            // Convert latitude and longitude to pixel coordinates
+            let x = (maxlon-longitude)/(maxlon-minlon) * (maxx-minx) + minx;
+            let y = (maxlat-latitude)/(maxlat-minlat) * (maxy-miny) + miny;
+
+            //     // Return coodinates as an object
+            return {x:x, y:y};
+          }
+
+        }();
+        </script>
+    </body>
+</html>

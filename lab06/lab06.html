@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Lab06</title>
+    <style>
+      #div1 {
+        border: 1px solid black;
+        width: 600px;
+        margin: 0 auto;
+      }
+    </style>
+
+  </head>
+  <body>
+  <div id="div1">
+    <svg id="cvs" width="600" height="500">
+      <text x = "90" y = "30" font-family = "Verdana" font-size = "20px">7</text>
+      <text x = "130" y = "30" font-family = "Verdana" font-size = "20px">6</text>
+      <text x = "170" y = "30" font-family = "Verdana" font-size = "20px">5</text>
+      <text x = "210" y = "30" font-family = "Verdana" font-size = "20px">4</text>
+      <text x = "250" y = "30" font-family = "Verdana" font-size = "20px">3</text>
+      <text x = "290" y = "30" font-family = "Verdana" font-size = "20px">2</text>
+      <text x = "330" y = "30" font-family = "Verdana" font-size = "20px">1</text>
+      <text x = "370" y = "30" font-family = "Verdana" font-size = "20px">0</text>
+      <text id="total" x = "125" y = "100" font-family = "Verdana" font-size = "30px">0</text>
+    </svg>
+  </div>
+
+  <script type="text/javascript">
+    (function() {
+      //array for which buttons are activated
+      let activated = [0, 0, 0, 0, 0, 0, 0, 0];
+      //create SVGElement, given in project description
+      function createSVGElement(tag, attrs, innerHTML){
+        let ns = "http://www.w3.org/2000/svg";
+        let el = document.createElementNS(ns, tag);
+        for(let attr in attrs){
+          el.setAttribute(attr, String(attrs[attr]));
+        }
+        if(innerHTML){
+          el.innerHTML = innerHTML;
+        }
+        return el;
+      }
+
+      function init(){
+        //makes the circles
+        var cx = 100;
+        let svg = document.getElementById("cvs");
+        for(let i = 0; i < 8; i ++){
+          let circle = createSVGElement('circle', {stroke:"black", fill:"white", cx:cx, cy:"50", r:"15", id:i});
+          svg.append(circle);
+          circle.onclick = toggle;
+          cx += 40;
+        }
+      }
+      //event handler, if a button is activated
+      //it changes the corresponding index in
+      //activated array
+      function toggle(event){
+        var svgobj = event.target;
+        index = svgobj.getAttribute('id');
+        console.log(index);
+        if(svgobj.getAttribute('fill') === "white"){
+          svgobj.setAttribute('fill', "green");
+          activated[index] = 1;
+          update();
+        }
+        else{
+          svgobj.setAttribute('fill', "white");
+          activated[index] = 0;
+          update();
+        }
+      }
+
+      //updates the total displayed on the screen
+      function update(){
+        let total = document.getElementById('total');
+        let sum = 0;
+        if(activated[0] === 1){
+          sum += Math.pow(2, 7);
+        }
+        if(activated[1] === 1){
+          sum += Math.pow(2, 6);
+        }
+        if(activated[2] === 1){
+          sum += Math.pow(2, 5);
+        }
+        if(activated[3] === 1){
+          sum += Math.pow(2, 4);
+        }
+        if(activated[4] === 1){
+          sum += Math.pow(2, 3);
+        }
+        if(activated[5] === 1){
+          sum += Math.pow(2, 2);
+        }
+        if(activated[6] === 1){
+          sum += Math.pow(2, 1);
+        }
+        if(activated[7] === 1){
+          sum += Math.pow(2, 0);
+        }
+        //calculates sum then displays it
+        total.textContent = sum;
+      }
+      init();
+    }) ();
+  </script>
+</body>
+</html>

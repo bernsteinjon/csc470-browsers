@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Async Cats</title>
+  </head>  
+  <body>
+      <script type="text/javascript">
+
+        // // Load an Image and append to document body
+        // function loadImage(url) {
+        //     const img = new Image();
+        //     img.onload  = function() {
+        //         document.body.appendChild(img);
+        //     }
+        //     img.onerror = function() { 
+        //         console.log("Error loading " + url);
+        //     }
+        //     img.src = url;
+        // }
+        // loadImage("cats1.jpg");
+
+        // Load image asynchronously.
+        // If loaded successfully, call resolve(img) with new Image.
+        // If failed, call reject(url)
+        function loadImage(url, resolve, reject) {
+            const img = new Image();
+            img.onload  = function() { if (resolve) { resolve(img); } };
+            img.onerror = function() { if (reject)  { reject(url);  } };
+            img.src = url;
+        }
+
+        // loadImage("cats1.jpg", 
+        //         (img) => { document.body.appendChild(img); },
+        //         (url) => { console.log( "Error loading " + url); } );
+
+        // Add all images in a loop
+        function addAllLoop(urls) {
+            for (url of urls) {
+                loadImage(url, function(img) {
+                    document.body.appendChild(img);
+                });
+            }
+        }
+
+        // Add all images using continuation passing style
+        function addAllCPS(urls) {
+            loadImage( urls[0], function(img) {
+                document.body.appendChild(img);
+                loadImage(urls[1], function(img) {
+                    document.body.appendChild(img);
+                    loadImage(urls[2], function(img) {
+                        document.body.appendChild(img);
+                        loadImage(urls[3], function(img) {
+                            document.body.appendChild(img);
+                        });
+                    })
+                })
+            });
+        }
+
+        // Wrap load in a Promise
+        function loadImagePromise(url) {
+            let doAsync = function(resolve, reject) {
+                loadImage(url, resolve, reject);
+            }
+            return new Promise( doAsync );
+        }
+
+        // Load all cats using Promise 'then' notation.
+        // Synchronous functions may be interspersed
+        function addAllPromise(urls) {
+            loadImagePromise(urls[0])
+            .then(  function(img) { document.body.appendChild(img); } )
+            .then(  function()    { return loadImagePromise(urls[1]); } )
+            .then(  function(img) { document.body.appendChild(img); } )
+            .then(  function()    { return loadImagePromise(urls[2]); } )
+            .then(  function(img) { document.body.appendChild(img); } )
+            .then(  function()    { return loadImagePromise(urls[3]); } )
+            .then(  function(img) { document.body.appendChild(img); } )
+            // .then( function()    { return loadImagePromise(urls[4]); } )
+            // .then( function(img) { document.body.appendChild(img); } )
+            .catch( function(url) { console.log( url + " not found"); })
+        }
+
+        // Load all cats using async/await notation
+        async function addAllAsyncAwait(urls) {
+            let img;
+            try {
+                img = await loadImagePromise( urls[0] );
+                document.body.appendChild(img);
+                img = await loadImagePromise( urls[1] );
+                document.body.appendChild(img);
+                img = await loadImagePromise( urls[2] );
+                document.body.appendChild(img);
+                img = await loadImagePromise( urls[3] );
+                document.body.appendChild(img);
+                // img = await loadImagePromise( urls[4] );
+                // document.body.appendChild(img);
+            } catch(url) {
+                console.log( url + " not found");
+            }
+        }
+
+        //--- Helper for sequencing asynchronous functions using a generator
+        //https://modernweb.com/replacing-callbacks-with-es6-generators/
+        function run(gen) {
+            let itr = gen(cb);
+            function cb(result) { itr.next(result); }
+            itr.next();
+        }
+
+        // Load all cats using a generator
+        function addAllGenerator(urls) {
+            // Asynchronous sequence of tasks
+            run(function*(cb) {
+                let img;
+                img = yield loadImage(urls[0], cb);
+                document.body.appendChild(img);
+                img = yield loadImage(urls[1], cb);
+                document.body.appendChild(img);
+                img = yield loadImage(urls[2], cb);
+                document.body.appendChild(img);
+                img = yield loadImage(urls[3], cb);
+                document.body.appendChild(img);
+                // img = yield loadImage(urls[4], cb);
+                // document.body.appendChild(img);
+                // Errors must be handled in a custom manner,
+                // Usually be yielding the error
+            });
+        }
+
+        // All image URLs
+        let urls = ["cats1.jpg", "cats2.jpg", "cats3.jpg", "cats4.jpg" ];
+        // let urls = ["cats1.jpg", "cats2.jpg", "cats3.jpg", "cats4.jpg", "cats5.jpg"];
+
+        // Load in a loop. Order is not preserved
+        // addAllLoop(urls);
+
+        // Load using CPS to preserve order
+        // addAllCPS(urls);
+
+        // Load using raw Promises to preserve order
+        // addAllPromise( urls );
+
+        // Load using async/await to preserve order
+        addAllAsyncAwait(urls);
+
+        // Load using a generator
+        // addAllGenerator(urls);
+
+        console.log("done");
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Lab04</title>
+    <style>
+      table {
+        /* format table border */
+        border: 1px solid gray;
+        border-collapse: collapse;
+
+        /* format table-wide font */
+        font-family: verdana;
+
+        /* Center table on page */
+        margin-left: auto;
+        margin-right: auto;
+      }
+      th {
+        width: 100px;
+        background-color: gray;
+        color: white;
+      }
+      td {
+        text-align: center;
+      }
+      .total {
+        border-top: 1px solid gray;
+        font-weight: bold;
+      }
+    </style>
+    <script type="text/javascript">
+
+    /*
+    Jon Bernstein
+    CSC470
+    Lab04
+    */
+
+//addrow function
+//creates a new row at the bottom of table
+
+      const addRow = function(v1, v2, v3) {
+        var body = document.getElementsByTagName("tbody")[0];
+        //variable for body
+        var newRow = document.createElement("tr");
+        //creates a new element for newRow
+
+        //create 4 cells, appends them to body
+        var cell = document.createElement("td");
+        var val = document.createTextNode(" ");
+        cell.appendChild(val);
+        newRow.appendChild(cell);
+
+        var cell1 = document.createElement("td");
+        var val1 = document.createTextNode(v1);
+        cell1.appendChild(val1);
+        newRow.appendChild(cell1);
+
+        var cell2 = document.createElement("td");
+        var val2 = document.createTextNode(v2);
+        cell2.appendChild(val2);
+        newRow.appendChild(cell2);
+
+        var cell3 = document.createElement("td");
+        var val3 = document.createTextNode(v3);
+        cell3.appendChild(val3);
+        newRow.appendChild(cell3);
+
+        body.appendChild(newRow);
+      }
+
+      const deleteRow = function(nrow){
+        //deletes row, does nrow + 1 so you can't delete headers
+        nrow += 1;
+        document.getElementById("tbl1").deleteRow(nrow);
+      }
+
+      const reformat = function(){
+        //gets elements
+        var body = document.getElementsByTagName("tbody")[0];
+        let i = 1;
+
+        for(let j = 0; j < body.children.length; j++){
+          var rows = document.getElementsByTagName("tr")[i];
+          //increments the leftmost element
+          rows.children[0].innerText = j + 1;
+          if(j % 2 == 0){ //alternating colors for bg
+            rows.bgColor = "lightgray";
+          }
+          else{
+            rows.bgColor = "white";
+          }
+          i++;
+        }
+      }
+      const updateTotals = function(){
+        var body = document.getElementsByTagName("tbody")[0];
+        var numRows = body.children.length;
+        let i = 1;
+        let j = 0;
+        let sum1 = 0;
+        let sum2 = 0;
+        let sum3 = 0;
+
+        for(j = 0; j < numRows; j++){
+          //uses parsefloat to add up columns
+          var rows = document.getElementsByTagName("tr")[i];
+          sum1 += parseFloat(rows.children[1].innerText);
+          sum2 += parseFloat(rows.children[2].innerText);
+          sum3 += parseFloat(rows.children[3].innerText);
+          i++;
+        }
+
+        rows = document.getElementsByTagName("tr")[i];
+        //sets all totals
+        rows.children[1].innerText = sum1;
+        rows.children[2].innerText = sum2;
+        rows.children[3].innerText = sum3;
+      }
+
+      const highlight = function( fn ) {
+        var body = document.getElementsByTagName("tbody")[0];
+        var numRows = body.children.length;
+
+        let i = 1;
+        let j = 0;
+
+        for(j; j < numRows; j++){
+          var rows = document.getElementsByTagName("tr")[i];
+          var x = rows.children[1].innerText;
+          //checks if the function is true for each rows.children
+          //if so, highlights
+          if(fn(x) == true){
+            rows.children[1].style.backgroundColor = "yellow";
+          }
+          x = rows.children[2].innerText;
+          if(fn(x) == true){
+            rows.children[2].style.backgroundColor = "yellow";
+          }
+          x = rows.children[3].innerText;
+          if(fn(x) == true){
+            rows.children[3].style.backgroundColor = "yellow";
+          }
+          i++;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <table id="tbl1">
+      <thead>
+        <tr><th>#</th><th>A</th><th>B</th><th>C</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>1</td><td>2</td><td>3</td></tr>
+        <tr><td>2</td><td>4</td><td>5</td><td>6</td></tr>
+        <tr><td>3</td><td>7</td><td>8</td><td>9</td></tr>
+        <tr><td>4</td><td>10</td><td>11</td><td>12</td></tr>
+      </tbody>
+      <tfoot>
+        <tr class="total"><td>Total:</td><td>0</td><td>0</td><td>0</td></tr>
+      </tfoot>
+    </table>
+
+    <script type="text/javascript">
+      // Delete the first row
+      deleteRow(0);
+
+      // Add two more rows
+      addRow(4, 5, 6);
+      addRow(7, 8, 9);
+
+      // Reformat table
+      reformat();
+
+      // Update totals
+      updateTotals();
+
+      // Highlight all cells matching criterion
+      highlight( x => (x > 5) && (x < 10) );
+      highlight( x => x % 2 === 0 );
+
+    </script>
+  </body>
+</html>

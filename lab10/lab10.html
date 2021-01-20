@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab10</title>
+</head>
+<body>
+    <p><button id="go">Go</button></p>
+    <p><canvas id="cvs"></canvas></p>
+    <script type="text/javascript">
+
+// Jon Bernstein
+// Lab 10
+// Purpose:
+//
+// convert a color image to greyscale using workers
+
+    (function(){
+        let BASE_URL = 'http://localhost:8080/';
+        let img = new Image();
+        let el = document.getElementById.bind(document);
+        let cvs = el('cvs');
+        let ctx = cvs.getContext('2d');
+        let wkr = new Worker('worker.js');
+        let m;
+
+        img.src = BASE_URL + 'tree.jpg';
+
+        img.onload = function(){ //responsible for drawing the image
+            cvs.width = img.width; //fits image to canvas
+            cvs.height = img.height;
+            ctx.drawImage(img, 0, 0);
+        };
+
+        wkr.onmessage = function(m){
+            let imgData = ctx.createImageData(cvs.width, cvs.height);
+            imgData.data.set(m.data); //creates imageData to pass to worker
+            ctx.putImageData(imgData, 0, 0);
+            wkr.terminate();
+        };
+
+        el('go').addEventListener('click', function(){ //on click event
+            wkr.postMessage(ctx.getImageData(0, 0, img.width, img.height)); //passes to worker
+        }, false);
+    })();
+
+    </script>
+</body>
+</html>

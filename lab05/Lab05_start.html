@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Lab05</title>
+    <style>
+      table {
+        margin-left      : 10px;
+      }
+      #swatch {
+        border           : 1px solid black;
+        min-width        : 100px;
+        height           : 100px;
+        background-color : rgb(0,0,0);
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td>Red:</td>
+        <td><input id="R" type="range" value="0" min="0" max="255"></td>
+      </tr><tr>
+        <td>Green:</td>
+        <td><input id="G" type="range" value="0" min="0" max="255"></td>
+      </tr><tr>
+        <td>Blue:</td>
+        <td><input id="B" type="range" value="0" min="0" max="255"></td>
+      </tr><tr>
+        <td colspan='2'>Color: <span id="clr"></span></td>
+      </tr><tr>
+        <td id="swatch" colspan='2'></td>
+      <tr>
+    </table>
+    <script>
+    (function(){ //iife
+      let red = document.getElementById("R").value; //gets initial value for R
+      let green = document.getElementById("G").value; //gets initial value for G
+      let blue = document.getElementById("B").value; //gets initial value for B
+      let el = document.getElementById("swatch"); //gets the swatch element
+      let x = "rgb(" + red + ", " + green + ", " + blue + ")"; //formats a string to be passed as a parameter
+      document.getElementById("clr").innerHTML = x;
+      //console.log(x); DEBUG
+
+      R.oninput = function(){ //executes function on input of R
+        red = document.getElementById("R").value; //updates value of red
+        x = 'rgb(' + red + ", " + green + ", " + blue + ")"; //formats string for setAttribute parameter
+        document.getElementById("clr").innerHTML = x;
+        //console.log(x); DEBUG
+        el.setAttribute('style',"background-color: " + x); //changes the background-color attribute
+        //console.log("Red: " + red); DEBUG
+      }
+      G.oninput = function(){ //executes function on input of G
+        green = document.getElementById("G").value; //updates value of green
+        x = 'rgb(' + red + ", " + green + ", " + blue + ")"; //formats string for setAttribute parameter
+        document.getElementById("clr").innerHTML = x;
+        //console.log(x); DEBUG
+        el.setAttribute('style',"background-color: " + x); //changes the background-color attribute
+        //console.log("Green: " + green); DEBUG
+      }
+      B.oninput = function(){ //executes function on input of B
+        blue = document.getElementById("B").value; //updates value of blue
+        x = 'rgb(' + red + ", " + green + ", " + blue + ")"; //formates string for setAttribute parameter
+        document.getElementById("clr").innerHTML = x;
+        //console.log(x); DEBUG
+        el.setAttribute('style',"background-color: " + x); //changes the background-color attribute
+        //console.log("Blue: " + blue); DEBUG
+      }
+    })();
+
+    </script>
+  </body>
+</html>

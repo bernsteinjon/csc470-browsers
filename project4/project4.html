@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Project 4</title>
+        <style>
+            * { font-family: Arial; }
+            div { margin: 5px; }
+        </style>
+    </head>
+    <body>
+        <div>
+            Image:
+            <select id="imagep">
+                <option value="">Select Image</option>
+                <option value="coins.jpg">coins.jpg</option>
+                <option value="grainy.png">grainy.png</option>
+                <option value="sausalito.jpg">sausalito.jpg</option>
+                <option value="galaxy.jpg">galaxy.jpg</option>
+                <option value="nyc.jpg">nyc.jpg</option>
+            </select>
+            <button id="bLoadImage">Reset</button>
+            | # Workers: <input type="range" id="nworkers" min="1" max="8" value="1" style="height:10px;"><span id="sNWorkers">1</span>
+            | <button id="b">Process</button>
+        </div>
+        <div>
+            Elapsed times: <span id="out"></span></div>
+        </div>
+        <div>
+            <canvas id="cvs"></canvas>
+        </div>
+
+        <script type="text/javascript">
+        //Jon Bernstein
+        //Project 4
+
+        (function() {
+          //variables that serve various purposes
+            let cvs = document.getElementById("cvs");
+            let ctx = cvs.getContext('2d');
+            let workers = [];
+            let worker;
+            let nworkers;
+            let button = document.getElementById('b');
+            let slider = document.getElementById('nworkers');
+            let select = document.getElementById('imagep');
+            let reset = document.getElementById('bLoadImage');
+            let time = document.getElementById('out');
+            let img = new Image();
+
+            //formats canvas to fit image
+            //after photo has been chosen
+            select.onchange = function(event){
+              img.src = select.value;
+              cvs.width = img.width;
+              cvs.height = img.height;
+            }
+            //draws the image
+            img.onload = function(event){
+              ctx.drawImage(img, 0, 0);
+            }
+            //takes how many workers the user wants
+            slider.oninput = function(event){
+              nworkers = slider.value;
+              document.getElementById('sNWorkers').innerHTML = nworkers;
+            }
+            //handles reset
+            reset.onclick = function(event){
+              workers = [];
+              button.addEventListener('click', handleClick);
+              ctx.clearRect(0, 0, cvs.width, cvs.height);
+              time.innerHTML = "";
+            }
+            //handles actual processing
+            handleClick = function(event){
+              let y = 0;
+              let stripHeight = Math.ceil(img.height / nworkers); //splits img into strips
+              for(let i = 0; i < nworkers; i ++){
+                workers.push(new Worker("process_start.js")); //makes new Workers
+                let strip = ctx.getImageData(0, 0, img.width, stripHeight + 2);
+                let msg = {imData: strip, x: 0, y: y, height: stripHeight, id: "w" + i};
+                workers[i].postMessage(msg);
+                y += stripHeight;
+                stripHeight += stripHeight;
+              }
+              button.removeEventListener('click', handleClick); //removes event
+              y = (stripHeight + 2); 
+              for(let j = 0; j < nworkers; j ++){
+                workers[j].onmessage = function(event){
+                  let newImg = event.data;
+                  ctx.putImageData(newImg.imData, 0, y, newImg.x, newImg.y, newImg.imData.width, newImg.imData.height);
+                  y += stripHeight;
+                  time.innerHTML += newImg.id;
+                  workers[j].terminate();
+                }
+              }
+            }
+            button.addEventListener('click', handleClick);
+        })();
+        </script>
+    </body>
+</html>

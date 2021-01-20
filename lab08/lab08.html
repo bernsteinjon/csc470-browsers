@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Lab08</title>
+  </head>
+  <body>
+    <script type="text/javascript">
+/*
+Jon Bernstein
+Lab 08
+4/24/2019
+
+Practice using the XMLHttpRequestobject with two styles
+of asynchronous programming: Continuation-Passing Style
+and Promises using async/await.
+*/
+
+(function () {
+
+ let URL = 'http://localhost:8080/';
+ let pages = ['p1.html', 'p2.html', 'p3.html']; //arr of file names
+ let xhr;
+
+ function loadPage(page, resolve, reject){
+     let xhr = new XMLHttpRequest();
+     xhr.onload = function () { //onload function
+         if(resolve){
+           resolve(xhr);
+         }
+     };
+     xhr.onerror = function(){ //onerror function
+         if(reject){
+           reject(page);
+         }
+     };
+     xhr.src = page;
+     xhr.open('GET', URL + page, true);
+     xhr.send();
+ }
+
+function loadPages(){ //loads pages through passing
+  loadPage(pages[0], function(xhr){
+    document.body.innerHTML += xhr.responseText;
+    loadPage(pages[1], function(xhr){
+      document.body.innerHTML += xhr.responseText;
+      loadPage(pages[2], function(xhr){
+        document.body.innerHTML += xhr.responseText;
+      });
+    });
+  });
+}
+
+function loadPagePromise(url) { //loads pages through promises
+    let doAsync = function(resolve, reject) {
+        loadPage(url, resolve, reject);
+    }
+    return new Promise(doAsync);
+}
+
+async function addAllAsyncAwait(pages) {
+    let img;
+    try {
+        img = await loadPagePromise(pages[0] );
+        document.body.innerHTML += img.responseText;
+        img = await loadPagePromise(pages[1] );
+        document.body.innerHTML += img.responseText;
+        img = await loadPagePromise(pages[2] );
+        document.body.innerHTML += img.responseText;
+    } catch(url) {
+        console.log( url + " not found");
+    }
+}
+loadPages();
+
+
+setTimeout(function(){
+  addAllAsyncAwait(pages);
+}, 100);
+
+})();
+    </script>
+  </body>
+</html>

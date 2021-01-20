@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Project 4</title>
+        <style>
+            * { font-family: Arial; }
+            div { margin: 5px; }
+        </style>
+    </head>
+    <body>
+        <div>
+            Image:
+            <select id="imagep">
+                <option value="coins.jpg">coins.jpg</option>
+                <option value="grainy.png">grainy.png</option>
+                <option value="sausalito.jpg">sausalito.jpg</option>
+                <option value="galaxy.jpg">galaxy.jpg</option>
+                <option value="nyc.jpg">nyc.jpg</option>
+            </select>
+            <button id="btn">Reset</button>
+            | # Workers: <input type="range" id="nworkers" min="1" max="8" value="1" style="height:10px;"><span id="sNWorkers">1</span>
+            | <button id="bProcess">Process</button>
+        </div>
+        <div>
+            Elapsed times: <span id="out"></span></div>
+        </div>
+        <div>
+            <canvas id="cvs"></canvas>
+        </div>
+
+        <script type="text/javascript">
+
+        </script>
+    </body>
+</html>

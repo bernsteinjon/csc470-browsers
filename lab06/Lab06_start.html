@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Lab06</title>
+    <style>
+      #div1 {
+        border: 1px solid black;
+        width: 600px;
+        margin: 0 auto;  
+      }
+    </style>
+
+  </head>
+  <body>
+  <div id="div1">
+    <svg id="cvs" width="600" height="500">
+      <text x = "95" y = "30" font-family = "Verdana" font-size = "20px">7</text>
+      <text x = "125" y = "30" font-family = "Verdana" font-size = "20px">6</text>
+      <text x = "155" y = "30" font-family = "Verdana" font-size = "20px">5</text>
+      <text x = "185" y = "30" font-family = "Verdana" font-size = "20px">4</text>
+      <text x = "215" y = "30" font-family = "Verdana" font-size = "20px">3</text>
+      <text x = "245" y = "30" font-family = "Verdana" font-size = "20px">2</text>
+      <text x = "275" y = "30" font-family = "Verdana" font-size = "20px">1</text>
+      <text x = "305" y = "30" font-family = "Verdana" font-size = "20px">0</text>
+
+      <text id="total" x = "125" y = "100" font-family = "Verdana" font-size = "30px">0</text>
+    </svg>
+  </div>
+
+  <script type="text/javascript">
+    (function() {
+      let bits = [0, 0, 0, 0, 0, 0, 0, 0];
+      function createSVGElement(tag, attrs, innerHTML){
+        let ns = "http://www.w3.org/2000/svg";
+        let el = document.createElementNS(ns, tag);
+        for(let attr in attrs){
+          el.setAttribute(attr, String(attrs[attr]));
+        }
+        if(innerHTML){
+          el.innerHTML = innerHTML;
+        }
+        return el;
+      }
+
+      function init(){
+        var circlex = 100;
+        let svg = document.getElementById("cvs");
+        for(let i = 0; i < 8; i ++){
+          let circle = createSVGElement('circle', {stroke:"green", fill:"white", cx:circlex, cy:"50", r:"15", id:i});
+          svg.append(circle);
+          circle.onclick = toggle;
+          circlex += 30;
+        }
+      }
+
+      function toggle(event){
+        var svgobj = event.target;
+        index = svgobj.getAttribute('id');
+        console.log(index);
+        if(svgobj.getAttribute('fill') === "white"){
+          svgobj.setAttribute('fill', "green");
+          bits[index] = 1;
+          update();
+        }
+        else{
+          svgobj.setAttribute('fill', "white");
+          bits[index] = 0;
+          update();
+        }
+      }
+
+      function update(){
+        let total = document.getElementById('total');
+        let sum = 0;
+        if(bits[0] === 1){
+          sum += Math.pow(2, 7);
+        }
+        if(bits[1] === 1){
+          sum += Math.pow(2, 6);
+        }
+        if(bits[2] === 1){
+          sum += Math.pow(2, 5);
+        }
+        if(bits[3] === 1){
+          sum += Math.pow(2, 4);
+        }
+        if(bits[4] === 1){
+          sum += Math.pow(2, 3);
+        }
+        if(bits[5] === 1){
+          sum += Math.pow(2, 2);
+        }
+        if(bits[6] === 1){
+          sum += Math.pow(2, 1);
+        }
+        if(bits[7] === 1){
+          sum += Math.pow(2, 0);
+        }
+        total.textContent = sum;
+      }
+      init();
+    }) ();
+  </script>
+</body>
+</html>
